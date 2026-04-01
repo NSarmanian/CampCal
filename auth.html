@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CampCal | Authentication</title>
+    <link rel="stylesheet" href="includes/style.css" />
+</head>
+<body class="landing-body">
+    <header class="marketing-nav">
+        <div class="logo">CampCal</div>
+        <nav>
+            <a href="index.html">Back to Home</a>
+        </nav>
+    </header>
+
+    <main class="landing-main">
+        <section class="auth-gateway">
+            <h2>Get Started with CampCal</h2>
+            <div class="auth-panel">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-target="login-form" type="button">Log Back In</button>
+                    <button class="auth-tab" data-target="new-user-form" type="button">New User?</button>
+                </div>
+
+                <form id="login-form" class="auth-form active" action="home.html" method="get">
+                    <label for="login-email">Email</label>
+                    <input id="login-email" name="email" type="email" required />
+
+                    <label for="login-password">Password</label>
+                    <input id="login-password" name="password" type="password" required />
+
+                    <button class="auth-submit" type="submit">Log Back In</button>
+                </form>
+
+                <form id="new-user-form" class="auth-form" action="home.html" method="get">
+                    <label for="new-name">Full Name</label>
+                    <input id="new-name" name="fullName" type="text" required />
+
+                    <label for="new-email">Email</label>
+                    <input id="new-email" name="email" type="email" required />
+
+                    <label for="new-password">Create Password</label>
+                    <input id="new-password" name="password" type="password" required />
+
+                    <button class="auth-submit" type="submit">Create Account</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const tabs = document.querySelectorAll('.auth-tab');
+        const forms = document.querySelectorAll('.auth-form');
+
+        tabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+                const targetId = tab.dataset.target;
+
+                tabs.forEach((currentTab) => currentTab.classList.remove('active'));
+                forms.forEach((form) => form.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
