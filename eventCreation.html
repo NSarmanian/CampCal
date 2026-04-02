@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Creation</title>
+    <link rel="stylesheet" href="includes/style.css">
+</head>
+<body>
+
+     <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">CampCal</div>
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="home.html">Calendar</a>
+            <a href="eventCreation.html">Create Event</a>
+            <a href="profileSettings.html">User Profile</a>
+        </nav>
+        <div class="user"><a href="profileSettings.html">Welcome, Schall</a></div>
+    </header>
+
+    <div class="event-creation-container">
+        <h1>Event Creation</h1>
+
+        <form>
+            <div class="form-grid">
+                <div class="fields-column">
+                    <div class="form-group">
+                        <label>Event Name</label>
+                        <input type="text" placeholder="Enter Event Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date">
+                    </div>
+
+                    <div class="form-group">
+                    <label>Time</label>
+                    <div class="time-row">
+                        <div class="time-label-small">Start Time</div>
+                        <div class="time-dial-container">
+                            <select name="start-hour">
+                                <option>12</option> <option>01</option> <option>02</option> <option>03</option>
+                                <option>04</option> <option>05</option> <option>06</option> <option>07</option>
+                                <option>08</option> <option>09</option> <option>10</option> <option>11</option>
+                            </select>
+                            <span>:</span>
+                            <select name="start-min">
+                                <option>00</option> <option>15</option> <option>30</option> <option>45</option>
+                            </select>
+                            <select name="start-ampm">
+                                <option>AM</option>
+                                <option>PM</option>
+                            </select>
+                        </div>
+
+                        <div class="time-label-small">End Time</div>
+                        <div class="time-dial-container">
+                            <select name="end-hour">
+                                <option>12</option> <option>01</option> <option>02</option> <option>03</option>
+                                <option>04</option> <option>05</option> <option>06</option> <option>07</option>
+                                <option>08</option> <option>09</option> <option>10</option> <option>11</option>
+                            </select>
+                            <span>:</span>
+                            <select name="end-min">
+                                <option>00</option> <option>15</option> <option>30</option> <option>45</option>
+                            </select>
+                            <select name="end-ampm">
+                                <option>AM</option>
+                                <option>PM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" placeholder="Enter Location">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Event Type</label>
+                        <select>
+                            <option value="" disabled selected>Select Event Type</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="seminar">Seminar</option>
+                            <option value="social">Social Gathering</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Audience</label>
+                        <select>
+                            <option value="" disabled selected>Select Audience</option>
+                            <option value="students">Students</option>
+                            <option value="professionals">Professionals</option>
+                            <option value="faculty">Faculty</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="details-column">
+                    <div class="form-group">
+                        <label>Event Details</label>
+                        <textarea placeholder="Enter Event Details"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button type="button" class="btn-link">Cancel</button>
+                <button type="submit" class="btn-link">Create</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
