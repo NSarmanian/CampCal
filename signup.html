@@ -16,7 +16,7 @@
             <a href="eventCreation.html">Create Event</a>
             <a href="profileSettings.html">User Profile</a>
         </nav>
-        <div class="user"><a href="profileSettings.html">Welcome </a></div>
+        <div class="user"><a href="auth.html">Log In</a></div>
     </header>
 
     <!-- MAIN CONTENT -->
@@ -40,5 +40,22 @@
 
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedName = localStorage.getItem('campCalUser');
+            const userLink = document.querySelector('.user a');
+
+            if (userLink) {
+                if (savedName) {
+                    userLink.textContent = `Welcome, ${savedName}`;
+                    userLink.href = 'profilePreferences.html';
+                } else {
+                    userLink.textContent = 'Log In';
+                    userLink.href = 'auth.html';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
