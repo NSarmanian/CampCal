@@ -3,84 +3,66 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CampCal | Authentication</title>
+    <title>CampCal | Login or Sign Up</title>
     <link rel="stylesheet" href="includes/style.css" />
 </head>
-<body class="landing-body">
-    <header class="marketing-nav">
+<body>
+    <header class="navbar">
         <div class="logo">CampCal</div>
         <nav>
-            <a href="index.html">Back to Home</a>
+            <a href="home.html">Home</a>
+            <a href="home.html">Calendar</a>
+            <a href="eventCreation.html">Create Event</a>
+            <a href="profileSettings.html">User Profile</a>
         </nav>
+        <div class="user"><a href="auth.html">Log In</a></div>
     </header>
 
-    <main class="landing-main">
-        <section class="auth-gateway">
-            <h2>Get Started with CampCal</h2>
-            <div class="auth-panel">
-                <div class="auth-tabs">
-                    <button class="auth-tab active" data-target="login-form" type="button">Log Back In</button>
-                    <button class="auth-tab" data-target="new-user-form" type="button">New User?</button>
-                </div>
+    <div class="auth-container">
+        <div class="auth-box">
+            <h2>Welcome to CampCal</h2>
+            <p>Log in or create an account</p>
 
-                <form id="login-form" class="auth-form active" action="home.html" method="get">
-                    <label for="login-email">Email</label>
-                    <input id="login-email" name="email" type="email" required />
+            <input id="nameInput" type="text" placeholder="Enter your name" />
 
-                    <label for="login-password">Password</label>
-                    <input id="login-password" name="password" type="password" required />
-
-                    <button class="auth-submit" type="submit">Log Back In</button>
-                </form>
-
-                <form id="new-user-form" class="auth-form" action="home.html" method="get">
-                    <label for="new-name">Full Name</label>
-                    <input id="new-name" name="fullName" type="text" required />
-
-                    <label for="new-email">Email</label>
-                    <input id="new-email" name="email" type="email" required />
-
-                    <label for="new-password">Create Password</label>
-                    <input id="new-password" name="password" type="password" required />
-
-                    <button class="auth-submit" type="submit">Create Account</button>
-                </form>
-            </div>
-        </section>
-    </main>
+            <button id="loginButton" class="auth-btn auth-btn-primary">Log In</button>
+            <button id="signupButton" class="auth-btn auth-btn-secondary">Go to Sign Up</button>
+        </div>
+    </div>
 
     <script>
-        // Tab switching logic (keep your existing code)
-        const tabs = document.querySelectorAll('.auth-tab');
-        const forms = document.querySelectorAll('.auth-form');
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedName = localStorage.getItem('campCalUser');
+            const userLink = document.querySelector('.user a');
+            const nameInput = document.getElementById('nameInput');
+            const loginButton = document.getElementById('loginButton');
+            const signupButton = document.getElementById('signupButton');
 
-        tabs.forEach((tab) => {
-            tab.addEventListener('click', () => {
-                const targetId = tab.dataset.target;
-                tabs.forEach((currentTab) => currentTab.classList.remove('active'));
-                forms.forEach((form) => form.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(targetId).classList.add('active');
+            if (userLink) {
+                if (savedName) {
+                    userLink.textContent = `Welcome, ${savedName}`;
+                    userLink.href = 'profilePreferences.html';
+                } else {
+                    userLink.textContent = 'Log In';
+                    userLink.href = 'auth.html';
+                }
+            }
+
+            loginButton.addEventListener('click', () => {
+                const enteredName = nameInput.value.trim();
+
+                if (enteredName !== '') {
+                    localStorage.setItem('campCalUser', enteredName);
+                    window.location.href = 'profilePreferences.html';
+                } else {
+                    alert('Please enter your name before logging in.');
+                }
             });
-        });
 
-        // --- NEW: SESSION PERSISTENCE LOGIC ---
-        
-        // Handle Login Form
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            const email = document.getElementById('login-email').value;
-            // For login, we can use the part of the email before the '@' as a temporary name
-            const displayName = email.split('@')[0]; 
-            localStorage.setItem('campCalUser', displayName);
-        });
-
-        // Handle New User Form
-        document.getElementById('new-user-form').addEventListener('submit', function(e) {
-            const fullName = document.getElementById('new-name').value;
-            // Save the actual name provided
-            localStorage.setItem('campCalUser', fullName);
+            signupButton.addEventListener('click', () => {
+                window.location.href = 'signup.html';
+            });
         });
     </script>
 </body>
 </html>
-

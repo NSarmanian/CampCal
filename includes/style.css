@@ -540,3 +540,84 @@ body {
 .btn-link:hover {
   text-decoration: underline;
 }
+
+/* AUTH PAGE CONTAINER */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 80px); /* accounts for navbar */
+}
+
+/* AUTH BOX (LOGIN/SIGNUP CARD) */
+.auth-box {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    width: 350px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* DARK MODE SUPPORT */
+body.dark-theme .auth-box {
+    background: #1e1e1e;
+    color: #f5f5f5;
+}
+
+/* HEADINGS */
+.auth-box h2 {
+    margin-bottom: 10px;
+}
+
+.auth-box p {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+body.dark-theme .auth-box p {
+    color: #bbb;
+}
+
+/* INPUTS */
+.auth-box input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+body.dark-theme .auth-box input {
+    background: #2c2c2c;
+    border: 1px solid #555;
+    color: white;
+}
+
+/* BUTTONS */
+.auth-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* PRIMARY LOGIN BUTTON */
+.auth-btn-primary {
+    background-color: #3498db;
+    color: white;
+}
+
+/* SECONDARY BUTTON */
+.auth-btn-secondary {
+    background-color: #2ecc71;
+    color: white;
+}
+
+/* HOVER EFFECT */
+.auth-btn:hover {
+    opacity: 0.9;
+}
