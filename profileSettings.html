@@ -99,14 +99,20 @@
 
             firstNameInput.value = localStorage.getItem('campCalProfileFirstName') || '';
             lastNameInput.value = localStorage.getItem('campCalProfileLastName') || '';
-            phoneInput.value = localStorage.getItem('campCalProfilePhone') || '';
+            phoneInput.value = formatPhoneNumber(
+                localStorage.getItem('campCalProfilePhone') || ''
+            );
+            phoneInput.addEventListener('input', () => {
+                phoneInput.value = formatPhoneNumber(phoneInput.value);
+            });
             emailInput.value = localStorage.getItem('campCalProfileEmail') || '';
             collegeInput.value = localStorage.getItem('campCalProfileCollege') || 'Liberty University';
 
             saveProfileBtn.addEventListener('click', () => {
                 localStorage.setItem('campCalProfileFirstName', firstNameInput.value.trim());
                 localStorage.setItem('campCalProfileLastName', lastNameInput.value.trim());
-                localStorage.setItem('campCalProfilePhone', phoneInput.value.trim());
+                const rawPhone = phoneInput.value.replace(/\D/g, '');
+                localStorage.setItem('campCalProfilePhone', rawPhone);
                 localStorage.setItem('campCalProfileEmail', emailInput.value.trim());
                 localStorage.setItem('campCalProfileCollege', collegeInput.value);
 
@@ -141,6 +147,24 @@
             const profileSelectedEvents = document.getElementById('profileSelectedEvents');
             const profilePrevMonth = document.getElementById('profilePrevMonth');
             const profileNextMonth = document.getElementById('profileNextMonth');
+
+            function formatPhoneNumber(value) {
+                const digits = value.replace(/\D/g, '').substring(0, 10);
+
+                const part1 = digits.substring(0, 3);
+                const part2 = digits.substring(3, 6);
+                const part3 = digits.substring(6, 10);
+
+                if (digits.length > 6) {
+                    return `(${part1}) ${part2}-${part3}`;
+                } else if (digits.length > 3) {
+                    return `(${part1}) ${part2}`;
+                } else if (digits.length > 0) {
+                    return `(${part1}`;
+                }
+
+                return '';
+            }
 
             function formatDateLocal(dateObj) {
                 const year = dateObj.getFullYear();

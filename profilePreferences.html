@@ -80,9 +80,10 @@
 
                 <div class="card">
                     <h2>My Profile</h2>
-                    <p>Email: example@email.com</p>
-                    <p>Phone: 123-456-7890</p>
-                    <p>College: Liberty University</p>
+                    <p id="profileName">Name: Not provided</p>
+                    <p id="profileEmail">Email: Not provided</p>
+                    <p id="profilePhone">Phone: Not provided</p>
+                    <p id="profileCollege">College: Not provided</p>
                 </div>
 
                 <div class="card">
@@ -129,6 +130,30 @@
             const logoutBtn = document.getElementById('logoutBtn');
             const loginBtn = document.getElementById('loginBtn');
 
+            const profileName = document.getElementById('profileName');
+            const profileEmail = document.getElementById('profileEmail');
+            const profilePhone = document.getElementById('profilePhone');
+            const profileCollege = document.getElementById('profileCollege');
+
+            // 🔥 Phone formatter (ADDED)
+            function formatPhoneNumber(value) {
+                const digits = value.replace(/\D/g, '').substring(0, 10);
+
+                const part1 = digits.substring(0, 3);
+                const part2 = digits.substring(3, 6);
+                const part3 = digits.substring(6, 10);
+
+                if (digits.length > 6) {
+                    return `(${part1}) ${part2}-${part3}`;
+                } else if (digits.length > 3) {
+                    return `(${part1}) ${part2}`;
+                } else if (digits.length > 0) {
+                    return `(${part1}`;
+                }
+
+                return '';
+            }
+
             if (userLink) {
                 if (savedName) {
                     userLink.textContent = `Welcome, ${savedName}`;
@@ -168,8 +193,17 @@
             });
 
             logoutBtn.addEventListener('click', () => {
+                // Remove user + theme
                 localStorage.removeItem('campCalUser');
                 localStorage.removeItem('campCalTheme');
+
+                // Remove saved profile info
+                localStorage.removeItem('campCalProfileFirstName');
+                localStorage.removeItem('campCalProfileLastName');
+                localStorage.removeItem('campCalProfilePhone');
+                localStorage.removeItem('campCalProfileEmail');
+                localStorage.removeItem('campCalProfileCollege');
+
                 window.location.href = 'home.html';
             });
 
@@ -180,6 +214,22 @@
                 loginBtn.style.display = 'block';
                 logoutBtn.style.display = 'none';
             }
+
+            const firstName = localStorage.getItem('campCalProfileFirstName') || '';
+            const lastName = localStorage.getItem('campCalProfileLastName') || '';
+            const email = localStorage.getItem('campCalProfileEmail') || '';
+            const phone = localStorage.getItem('campCalProfilePhone') || '';
+            const college = localStorage.getItem('campCalProfileCollege') || '';
+
+            const fullName = `${firstName} ${lastName}`.trim();
+
+            // 🔥 Format phone before display (FIX)
+            const formattedPhone = formatPhoneNumber(phone);
+
+            profileName.textContent = `Name: ${fullName || 'Not provided'}`;
+            profileEmail.textContent = `Email: ${email || 'Not provided'}`;
+            profilePhone.textContent = `Phone: ${formattedPhone || 'Not provided'}`;
+            profileCollege.textContent = `College: ${college || 'Not provided'}`;
         });
     </script>
 
