@@ -8,7 +8,6 @@
 </head>
 <body>
 
-     <!-- NAVBAR -->
     <header class="navbar">
         <div class="logo">CampCal</div>
         <nav>
@@ -23,66 +22,66 @@
     <div class="event-creation-container">
         <h1>Event Creation</h1>
 
-        <form>
+        <form id="eventForm">
             <div class="form-grid">
                 <div class="fields-column">
                     <div class="form-group">
-                        <label>Event Name</label>
-                        <input type="text" placeholder="Enter Event Name">
+                        <label for="eventName">Event Name</label>
+                        <input type="text" id="eventName" placeholder="Enter Event Name" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Date</label>
-                        <input type="date">
+                        <label for="eventDate">Date</label>
+                        <input type="date" id="eventDate" required>
                     </div>
 
                     <div class="form-group">
-                    <label>Time</label>
-                    <div class="time-row">
-                        <div class="time-label-small">Start Time</div>
-                        <div class="time-dial-container">
-                            <select name="start-hour">
-                                <option>12</option> <option>01</option> <option>02</option> <option>03</option>
-                                <option>04</option> <option>05</option> <option>06</option> <option>07</option>
-                                <option>08</option> <option>09</option> <option>10</option> <option>11</option>
-                            </select>
-                            <span>:</span>
-                            <select name="start-min">
-                                <option>00</option> <option>15</option> <option>30</option> <option>45</option>
-                            </select>
-                            <select name="start-ampm">
-                                <option>AM</option>
-                                <option>PM</option>
-                            </select>
+                        <label>Time</label>
+                        <div class="time-row">
+                            <div class="time-label-small">Start Time</div>
+                            <div class="time-dial-container">
+                                <select id="startHour" required>
+                                    <option>12</option><option>01</option><option>02</option><option>03</option>
+                                    <option>04</option><option>05</option><option>06</option><option>07</option>
+                                    <option>08</option><option>09</option><option>10</option><option>11</option>
+                                </select>
+                                <span>:</span>
+                                <select id="startMin" required>
+                                    <option>00</option><option>15</option><option>30</option><option>45</option>
+                                </select>
+                                <select id="startAmpm" required>
+                                    <option>AM</option>
+                                    <option>PM</option>
+                                </select>
+                            </div>
+
+                            <div class="time-label-small">End Time</div>
+                            <div class="time-dial-container">
+                                <select id="endHour" required>
+                                    <option>12</option><option>01</option><option>02</option><option>03</option>
+                                    <option>04</option><option>05</option><option>06</option><option>07</option>
+                                    <option>08</option><option>09</option><option>10</option><option>11</option>
+                                </select>
+                                <span>:</span>
+                                <select id="endMin" required>
+                                    <option>00</option><option>15</option><option>30</option><option>45</option>
+                                </select>
+                                <select id="endAmpm" required>
+                                    <option>AM</option>
+                                    <option>PM</option>
+                                </select>
+                            </div>
                         </div>
-
-                        <div class="time-label-small">End Time</div>
-                        <div class="time-dial-container">
-                            <select name="end-hour">
-                                <option>12</option> <option>01</option> <option>02</option> <option>03</option>
-                                <option>04</option> <option>05</option> <option>06</option> <option>07</option>
-                                <option>08</option> <option>09</option> <option>10</option> <option>11</option>
-                            </select>
-                            <span>:</span>
-                            <select name="end-min">
-                                <option>00</option> <option>15</option> <option>30</option> <option>45</option>
-                            </select>
-                            <select name="end-ampm">
-                                <option>AM</option>
-                                <option>PM</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                    <div class="form-group">
-                        <label>Location</label>
-                        <input type="text" placeholder="Enter Location">
                     </div>
 
                     <div class="form-group">
-                        <label>Event Type</label>
-                        <select>
+                        <label for="eventLocation">Location</label>
+                        <input type="text" id="eventLocation" placeholder="Enter Location" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventType">Event Type</label>
+                        <select id="eventType" required>
                             <option value="" disabled selected>Select Event Type</option>
                             <option value="workshop">Workshop</option>
                             <option value="seminar">Seminar</option>
@@ -91,8 +90,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Target Audience</label>
-                        <select>
+                        <label for="targetAudience">Target Audience</label>
+                        <select id="targetAudience" required>
                             <option value="" disabled selected>Select Audience</option>
                             <option value="students">Students</option>
                             <option value="professionals">Professionals</option>
@@ -103,14 +102,16 @@
 
                 <div class="details-column">
                     <div class="form-group">
-                        <label>Event Details</label>
-                        <textarea placeholder="Enter Event Details"></textarea>
+                        <label for="eventDetails">Event Details</label>
+                        <textarea id="eventDetails" placeholder="Enter Event Details" required></textarea>
                     </div>
                 </div>
             </div>
 
+            <p id="formMessage" class="form-message"></p>
+
             <div class="button-row">
-                <button type="button" class="btn-link">Cancel</button>
+                <button type="button" class="btn-link" id="cancelBtn">Cancel</button>
                 <button type="submit" class="btn-link">Create</button>
             </div>
         </form>
@@ -120,6 +121,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             const savedName = localStorage.getItem('campCalUser');
             const userLink = document.querySelector('.user a');
+            const form = document.getElementById('eventForm');
+            const formMessage = document.getElementById('formMessage');
+            const cancelBtn = document.getElementById('cancelBtn');
 
             if (userLink) {
                 if (savedName) {
@@ -130,6 +134,84 @@
                     userLink.href = 'auth.html';
                 }
             }
+
+            cancelBtn.addEventListener('click', () => {
+                window.location.href = 'home.html';
+            });
+
+            function convertTo24Hour(hour, minute, ampm) {
+                let h = parseInt(hour, 10);
+
+                if (ampm === 'AM' && h === 12) h = 0;
+                if (ampm === 'PM' && h !== 12) h += 12;
+
+                return `${String(h).padStart(2, '0')}:${minute}`;
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const title = document.getElementById('eventName').value.trim();
+                const date = document.getElementById('eventDate').value;
+                const location = document.getElementById('eventLocation').value.trim();
+                const category = document.getElementById('eventType').value;
+                const audience = document.getElementById('targetAudience').value;
+                const description = document.getElementById('eventDetails').value.trim();
+
+                const startTime = convertTo24Hour(
+                    document.getElementById('startHour').value,
+                    document.getElementById('startMin').value,
+                    document.getElementById('startAmpm').value
+                );
+
+                const endTime = convertTo24Hour(
+                    document.getElementById('endHour').value,
+                    document.getElementById('endMin').value,
+                    document.getElementById('endAmpm').value
+                );
+
+                if (!title || !date || !location || !category || !audience || !description) {
+                    formMessage.textContent = 'Please fill in all fields.';
+                    formMessage.className = 'form-message error';
+                    return;
+                }
+
+                const startDateTime = new Date(`${date}T${startTime}:00`);
+                const endDateTime = new Date(`${date}T${endTime}:00`);
+
+                if (endDateTime <= startDateTime) {
+                    formMessage.textContent = 'End time must be later than start time.';
+                    formMessage.className = 'form-message error';
+                    return;
+                }
+
+                const storedEvents = JSON.parse(localStorage.getItem('campCalCreatedEvents')) || [];
+
+                const newEvent = {
+                    id: Date.now(),
+                    title,
+                    date,
+                    time: startTime,
+                    endTime,
+                    location,
+                    description,
+                    category,
+                    audience,
+                    tags: [category, audience]
+                };
+
+                storedEvents.push(newEvent);
+                localStorage.setItem('campCalCreatedEvents', JSON.stringify(storedEvents));
+
+                formMessage.textContent = 'Event created successfully!';
+                formMessage.className = 'form-message success';
+
+                form.reset();
+
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 800);
+            });
         });
     </script>
 

@@ -621,3 +621,157 @@ body.dark-theme .auth-box input {
 .auth-btn:hover {
     opacity: 0.9;
 }
+
+/* REAL CALENDAR */
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.real-calendar-grid {
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-day {
+  min-height: 110px;
+  background: #f3f3f3;
+  border: 1px solid #cfcfcf;
+  padding: 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: 0.15s ease;
+}
+
+.calendar-day:hover {
+  background: #ebebeb;
+}
+
+.calendar-day.empty {
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
+.calendar-day.today {
+  border: 2px solid #1c4d87;
+}
+
+.calendar-day.selected {
+  background: #dff2f8;
+  border: 2px solid #2f9bbf;
+}
+
+.calendar-day-number {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.calendar-event-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.event-chip {
+  font-size: 0.72rem;
+  line-height: 1.2;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-chip.default {
+  background: #666;
+}
+
+.event-chip.sports {
+  background: #2e86de;
+}
+
+.event-chip.wellness {
+  background: #27ae60;
+}
+
+.event-chip.academic {
+  background: #8e44ad;
+}
+
+.event-chip.social {
+  background: #e67e22;
+}
+
+.event-chip.education {
+  background: #16a085;
+}
+
+.event-chip.music {
+  background: #c0392b;
+}
+
+.event-chip.workshop {
+  background: #2980b9;
+}
+
+.event-chip.seminar {
+  background: #7f8c8d;
+}
+
+.more-events {
+  font-size: 0.72rem;
+  color: #555;
+  font-weight: bold;
+}
+
+.event-meta {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 4px;
+}
+
+.form-message {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.form-message.success {
+  color: green;
+}
+
+.form-message.error {
+  color: #c0392b;
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-day {
+    min-height: 95px;
+  }
+}
+
+@media (max-width: 700px) {
+  .calendar-day {
+    min-height: 80px;
+    padding: 6px;
+  }
+
+  .event-chip {
+    font-size: 0.65rem;
+  }
+
+  .calendar-weekdays {
+    font-size: 0.85rem;
+  }
+}

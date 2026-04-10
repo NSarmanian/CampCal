@@ -2,13 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CampCal</title>
     <link rel="stylesheet" href="includes/style.css" />
-    <script type="module" src="src/eventList.js" defer></script>
-    <script type="module" src="src/calLibrary.js" defer></script>
 </head>
 <body>
-    <!-- NAVBAR -->
     <header class="navbar">
         <div class="logo">CampCal</div>
         <nav>
@@ -20,82 +18,40 @@
         <div class="user"><a href="auth.html">Log In</a></div>
     </header>
 
-    <!-- MAIN CONTENT -->
     <div class="container">
-
-        <!-- LEFT: EVENTS -->
         <aside class="sidebar">
             <h2>Upcoming Events</h2>
-            <div class="event-list"></div>
+            <div class="event-list" id="upcomingEvents"></div>
         </aside>
 
-        <!-- RIGHT: CALENDAR -->
         <main class="calendar-section">
-        <h2>Your Calendar</h2>
+            <h2>Your Calendar</h2>
 
-        <div class="calendar-box">
-            <div class="calendar-header">
-                <button>&lt;</button>
-                <span>March</span>
-                <button>&gt;</button>
+            <div class="calendar-box">
+                <div class="calendar-header">
+                    <button type="button" id="prevMonthBtn">&lt;</button>
+                    <span id="calendarMonthLabel">March 2026</span>
+                    <button type="button" id="nextMonthBtn">&gt;</button>
+                </div>
+
+                <div class="calendar-weekdays">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+
+                <div class="calendar-grid real-calendar-grid" id="calendarGrid"></div>
             </div>
 
-            <div class="calendar-grid">
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day active"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day active"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day active"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day active"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day active"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day active"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day"></div>
-                <div class="day active"></div>
-                <div class="day"></div>
-                <div class="day"></div>
+            <div class="selected-day" id="selectedDayPanel">
+                <h3 id="selectedDayHeading">Selected Day</h3>
+                <div id="selectedDayEvents"></div>
             </div>
-        </div>
-
-        <div class="selected-day">
-            <h3>Selected Day: March 26</h3>
-
-            <div class="event-row">
-            <span>Julia’s Birthday</span>
-            <span>5:00pm Demoss</span>
-            </div>
-
-            <div class="event-row">
-            <span>Party at the Hill</span>
-            <span>8:13pm Hill</span>
-            </div>
-
-            <div class="no-events">No more events...</div>
-        </div>
         </main>
-
     </div>
 
     <script>
@@ -112,6 +68,308 @@
                     userLink.href = 'auth.html';
                 }
             }
+
+            const starterEvents = [
+                {
+                    id: 1,
+                    title: 'Tennis Meetup',
+                    date: '2026-03-10',
+                    time: '14:00',
+                    location: 'Liberty Tennis Courts',
+                    description: 'Come meet up with us at the Liberty Tennis Courts, play a couple games!',
+                    category: 'sports'
+                },
+                {
+                    id: 2,
+                    title: 'Basketball Pickup Game',
+                    date: '2026-03-11',
+                    time: '18:00',
+                    location: 'Campus Recreation Center',
+                    description: 'Join us for a casual pickup basketball game. All skill levels welcome!',
+                    category: 'sports'
+                },
+                {
+                    id: 3,
+                    title: 'Yoga in the Park',
+                    date: '2026-03-12',
+                    time: '09:00',
+                    location: 'Riverside Park',
+                    description: 'Start your morning with a relaxing yoga session.',
+                    category: 'wellness'
+                },
+                {
+                    id: 4,
+                    title: 'Study Group: Calculus I',
+                    date: '2026-03-12',
+                    time: '19:00',
+                    location: 'Library Room 201',
+                    description: 'Collaborative study session for upcoming calculus exam.',
+                    category: 'academic'
+                },
+                {
+                    id: 5,
+                    title: 'Computer Science Club Meeting',
+                    date: '2026-03-13',
+                    time: '17:00',
+                    location: 'Engineering Hall 105',
+                    description: 'Weekly meeting to discuss projects and tech topics.',
+                    category: 'academic'
+                },
+                {
+                    id: 6,
+                    title: 'Open Mic Night',
+                    date: '2026-04-08',
+                    time: '20:00',
+                    location: 'Student Lounge',
+                    description: 'Show off your talent in music, comedy, or poetry.',
+                    category: 'social'
+                },
+                {
+                    id: 7,
+                    title: 'Gardening Workshop',
+                    date: '2026-04-10',
+                    time: '15:00',
+                    location: 'Campus Garden',
+                    description: 'Learn how to plant and care for spring flowers.',
+                    category: 'education'
+                },
+                {
+                    id: 8,
+                    title: 'Spring Concert',
+                    date: '2026-04-12',
+                    time: '18:30',
+                    location: 'Campus Auditorium',
+                    description: 'Enjoy live performances by student bands.',
+                    category: 'music'
+                },
+                {
+                    id: 9,
+                    title: 'Trivia Night',
+                    date: '2026-04-15',
+                    time: '19:30',
+                    location: 'Campus Cafe',
+                    description: 'Test your knowledge and win prizes.',
+                    category: 'social'
+                },
+                {
+                    id: 10,
+                    title: 'Board Game Night',
+                    date: '2026-04-22',
+                    time: '18:00',
+                    location: 'Student Lounge',
+                    description: 'Play board games and meet new friends.',
+                    category: 'social'
+                }
+            ];
+
+            const createdEvents = JSON.parse(localStorage.getItem('campCalCreatedEvents')) || [];
+            const allEvents = [...starterEvents, ...createdEvents];
+
+            const categoryClasses = {
+                sports: 'event-chip sports',
+                wellness: 'event-chip wellness',
+                academic: 'event-chip academic',
+                social: 'event-chip social',
+                education: 'event-chip education',
+                music: 'event-chip music',
+                workshop: 'event-chip workshop',
+                seminar: 'event-chip seminar'
+            };
+
+            let currentDate = new Date();
+            let selectedDateStr = formatDateLocal(new Date());
+
+            const calendarGrid = document.getElementById('calendarGrid');
+            const calendarMonthLabel = document.getElementById('calendarMonthLabel');
+            const selectedDayHeading = document.getElementById('selectedDayHeading');
+            const selectedDayEvents = document.getElementById('selectedDayEvents');
+            const upcomingEvents = document.getElementById('upcomingEvents');
+            const prevMonthBtn = document.getElementById('prevMonthBtn');
+            const nextMonthBtn = document.getElementById('nextMonthBtn');
+
+            function formatDateLocal(dateObj) {
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            function formatReadableDate(dateStr) {
+                const dateObj = new Date(`${dateStr}T00:00:00`);
+                return dateObj.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
+
+            function formatTime(timeStr) {
+                if (!timeStr) return '';
+                const [hourStr, minute] = timeStr.split(':');
+                let hour = parseInt(hourStr, 10);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                hour = hour % 12 || 12;
+                return `${hour}:${minute} ${ampm}`;
+            }
+
+            function sortEventsByDateTime(events) {
+                return [...events].sort((a, b) => {
+                    const aDate = new Date(`${a.date}T${a.time || '00:00'}:00`);
+                    const bDate = new Date(`${b.date}T${b.time || '00:00'}:00`);
+                    return aDate - bDate;
+                });
+            }
+
+            function getEventsForDate(dateStr) {
+                return sortEventsByDateTime(allEvents.filter(event => event.date === dateStr));
+            }
+
+            function renderUpcomingEvents() {
+                const todayStr = formatDateLocal(new Date());
+
+                const upcoming = sortEventsByDateTime(
+                    allEvents.filter(event => {
+                        const eventDateTime = new Date(`${event.date}T${event.time || '00:00'}:00`);
+                        const todayDateTime = new Date(`${todayStr}T00:00:00`);
+                        return eventDateTime >= todayDateTime;
+                    })
+                ).slice(0, 8);
+
+                if (upcoming.length === 0) {
+                    upcomingEvents.innerHTML = '<div class="no-events">No upcoming events.</div>';
+                    return;
+                }
+
+                upcomingEvents.innerHTML = upcoming.map(event => `
+                    <div class="event-card">
+                        <div class="event-header">
+                            <span>${event.title}</span>
+                            <span>${formatTime(event.time)}</span>
+                        </div>
+                        <div class="event-meta">${formatReadableDate(event.date)}</div>
+                        <div class="event-meta">${event.location}</div>
+                    </div>
+                `).join('');
+            }
+
+            function renderSelectedDay(dateStr) {
+                selectedDayStr = dateStr;
+                selectedDayHeading.textContent = `Selected Day: ${formatReadableDate(dateStr)}`;
+
+                const events = getEventsForDate(dateStr);
+
+                if (events.length === 0) {
+                    selectedDayEvents.innerHTML = '<div class="no-events">No events for this day.</div>';
+                    return;
+                }
+
+                selectedDayEvents.innerHTML = events.map(event => `
+                    <div class="event-row">
+                        <div>
+                            <strong>${event.title}</strong><br>
+                            <small>${event.location}</small>
+                        </div>
+                        <div>${formatTime(event.time)}</div>
+                    </div>
+                `).join('');
+            }
+
+            function renderCalendar() {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+
+                const startDayIndex = firstDay.getDay();
+                const daysInMonth = lastDay.getDate();
+
+                calendarMonthLabel.textContent = firstDay.toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric'
+                });
+
+                calendarGrid.innerHTML = '';
+
+                for (let i = 0; i < startDayIndex; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'calendar-day empty';
+                    calendarGrid.appendChild(emptyCell);
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const cellDate = new Date(year, month, day);
+                    const dateStr = formatDateLocal(cellDate);
+                    const dayEvents = getEventsForDate(dateStr);
+
+                    const cell = document.createElement('div');
+                    cell.className = 'calendar-day';
+
+                    if (dateStr === formatDateLocal(new Date())) {
+                        cell.classList.add('today');
+                    }
+
+                    if (dateStr === selectedDayStr) {
+                        cell.classList.add('selected');
+                    }
+
+                    const dayNumber = document.createElement('div');
+                    dayNumber.className = 'calendar-day-number';
+                    dayNumber.textContent = day;
+                    cell.appendChild(dayNumber);
+
+                    const eventStack = document.createElement('div');
+                    eventStack.className = 'calendar-event-stack';
+
+                    dayEvents.slice(0, 2).forEach(event => {
+                        const chip = document.createElement('div');
+                        chip.className = categoryClasses[event.category] || 'event-chip default';
+                        chip.textContent = event.title;
+                        eventStack.appendChild(chip);
+                    });
+
+                    if (dayEvents.length > 2) {
+                        const more = document.createElement('div');
+                        more.className = 'more-events';
+                        more.textContent = `+${dayEvents.length - 2} more`;
+                        eventStack.appendChild(more);
+                    }
+
+                    cell.appendChild(eventStack);
+
+                    cell.addEventListener('click', () => {
+                        renderSelectedDay(dateStr);
+                        renderCalendar();
+                    });
+
+                    calendarGrid.appendChild(cell);
+                }
+            }
+
+            prevMonthBtn.addEventListener('click', () => {
+                currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+                renderCalendar();
+            });
+
+            nextMonthBtn.addEventListener('click', () => {
+                currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+                renderCalendar();
+            });
+
+            if (!allEvents.some(event => event.date === selectedDateStr)) {
+                const sorted = sortEventsByDateTime(allEvents);
+                if (sorted.length > 0) {
+                    selectedDateStr = sorted[0].date;
+                    currentDate = new Date(`${selectedDateStr}T00:00:00`);
+                }
+            } else {
+                currentDate = new Date();
+            }
+
+            renderUpcomingEvents();
+            renderSelectedDay(selectedDateStr);
+            renderCalendar();
         });
     </script>
 </body>
