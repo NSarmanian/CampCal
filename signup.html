@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>CampCal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CampCal | Sign Up</title>
     <link rel="stylesheet" href="includes/style.css" />
 </head>
 <body>
-
-    <!-- NAVBAR -->
     <header class="navbar">
         <div class="logo">CampCal</div>
         <nav>
@@ -19,25 +18,24 @@
         <div class="user"><a href="auth.html">Log In</a></div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <div class="container">
-        <div class="signup-container">
+    <div class="auth-container">
+        <div class="auth-box">
+            <h2>Create Your Account</h2>
+            <p>Set up your CampCal profile</p>
 
-        <div class="signup-box">
-            <h2>Sign Up</h2>
+            <input id="signupFirstName" type="text" placeholder="First name" />
+            <input id="signupLastName" type="text" placeholder="Last name" />
+            <input id="signupPhone" type="text" placeholder="Phone Number" />
+            <input id="signupEmail" type="email" placeholder="Email" />
 
-            <input type="text" placeholder="First name" />
-            <input type="text" placeholder="Last name" />
-            <input type="text" placeholder="Phone Number" />
-            <input type="email" placeholder="Email" />
-
-            <select>
-            <option>Liberty University</option>
+            <select id="signupCollege" class="auth-select">
+                <option value="Liberty University">Liberty University</option>
+                <option value="University of Virginia">University of Virginia</option>
+                <option value="Virginia Tech">Virginia Tech</option>
             </select>
 
-            <button>Sign Up!</button>
-        </div>
-
+            <button id="signupSubmit" class="auth-btn auth-btn-primary">Sign Up</button>
+            <button id="goToLogin" class="auth-btn auth-btn-secondary">Back to Log In</button>
         </div>
     </div>
 
@@ -45,6 +43,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const savedName = localStorage.getItem('campCalUser');
             const userLink = document.querySelector('.user a');
+            const signupSubmit = document.getElementById('signupSubmit');
+            const goToLogin = document.getElementById('goToLogin');
 
             if (userLink) {
                 if (savedName) {
@@ -55,6 +55,34 @@
                     userLink.href = 'auth.html';
                 }
             }
+
+            signupSubmit.addEventListener('click', () => {
+                const firstName = document.getElementById('signupFirstName').value.trim();
+                const lastName = document.getElementById('signupLastName').value.trim();
+                const phone = document.getElementById('signupPhone').value.trim();
+                const email = document.getElementById('signupEmail').value.trim();
+                const college = document.getElementById('signupCollege').value;
+
+                if (!firstName || !lastName || !phone || !email) {
+                    alert('Please fill in all signup fields.');
+                    return;
+                }
+
+                const fullName = `${firstName} ${lastName}`.trim();
+
+                localStorage.setItem('campCalUser', fullName);
+                localStorage.setItem('campCalProfileFirstName', firstName);
+                localStorage.setItem('campCalProfileLastName', lastName);
+                localStorage.setItem('campCalProfilePhone', phone);
+                localStorage.setItem('campCalProfileEmail', email);
+                localStorage.setItem('campCalProfileCollege', college);
+
+                window.location.href = 'profileSettings.html';
+            });
+
+            goToLogin.addEventListener('click', () => {
+                window.location.href = 'auth.html';
+            });
         });
     </script>
 </body>

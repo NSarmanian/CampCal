@@ -31,8 +31,7 @@ body {
 
 /* SIDEBAR */
 .sidebar {
-  background: #e5e5e5;
-  padding: 15px;
+  background: transparent;
 }
 
 .event-card {
@@ -50,8 +49,7 @@ body {
 
 /* CALENDAR */
 .calendar-section {
-  background: #e5e5e5;
-  padding: 15px;
+  background: transparent;
 }
 
 .calendar-box {
@@ -104,15 +102,13 @@ body {
 }
 
 .card {
-  background: #e5e5e5;
-  padding: 15px;
+  background: transparent;
 }
 
 /* SIGNUP */
 .signup-box {
   width: 300px;
-  background: #e5e5e5;
-  padding: 20px;
+  background: transparent;
   border: 3px solid #4a90e2;
 }
 
@@ -305,8 +301,7 @@ body {
 
 .profile-form-panel,
 .profile-calendar-panel {
-  background: #e5e5e5;
-  padding: 20px;
+  background: transparent;
 }
 
 .profile-form-panel h1 {
@@ -776,5 +771,107 @@ body.dark-theme .auth-box input {
 
   .calendar-weekdays {
     font-size: 0.85rem;
+  }
+}
+
+/* SIGNUP MATCH LOGIN */
+.auth-box .auth-select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  background: white;
+}
+
+body.dark-theme .auth-box .auth-select {
+  background: #2c2c2c;
+  border: 1px solid #555;
+  color: white;
+}
+
+/* SMALL PROFILE CALENDAR */
+.profile-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.profile-calendar-grid-real {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.profile-mini-day {
+  min-height: 52px;
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 6px;
+  box-sizing: border-box;
+  cursor: pointer;
+  background: transparent;
+}
+
+.profile-mini-day.empty {
+  border: none;
+  cursor: default;
+}
+
+.profile-mini-day:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.profile-mini-day.today {
+  border: 2px solid #1c4d87;
+}
+
+.profile-mini-day.selected {
+  background: rgba(47, 155, 191, 0.18);
+  border: 2px solid #2f9bbf;
+}
+
+.profile-mini-day-number {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.profile-mini-marker {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7c4dff;
+}
+
+.profile-selected-day .event-row {
+  align-items: center;
+}
+
+.profile-selected-day small {
+  color: #555;
+}
+
+@media (max-width: 700px) {
+  .profile-mini-day {
+    min-height: 44px;
+    padding: 4px;
+  }
+
+  .profile-mini-day-number {
+    font-size: 0.8rem;
+  }
+
+  .profile-calendar-weekdays {
+    font-size: 0.72rem;
   }
 }

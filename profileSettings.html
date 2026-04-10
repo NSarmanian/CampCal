@@ -41,7 +41,7 @@
                 <option>Virginia Tech</option>
             </select>
 
-            <button class="profile-submit">Save Profile</button>
+            <button class="profile-submit" id="saveProfileBtn">Save Profile</button>
             <a class="profile-secondary-link" href="profilePreferences.html">Go to Profile Preferences</a>
         </section>
 
@@ -50,68 +50,27 @@
 
             <div class="calendar-box profile-calendar-box">
                 <div class="calendar-header">
-                    <button type="button" aria-label="Previous month">&lt;</button>
-                    <span>March</span>
-                    <button type="button" aria-label="Next month">&gt;</button>
+                    <button type="button" id="profilePrevMonth" aria-label="Previous month">&lt;</button>
+                    <span id="profileMonthLabel">Month Year</span>
+                    <button type="button" id="profileNextMonth" aria-label="Next month">&gt;</button>
                 </div>
 
-                <div class="calendar-grid profile-calendar-grid">
-                    <div class="day dot-orange"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day dot-red"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day dot-yellow"></div>
-
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day active dot-yellow"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day"></div>
-                    <div class="day dot-green"></div>
+                <div class="profile-calendar-weekdays">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
                 </div>
+
+                <div class="profile-calendar-grid-real" id="profileCalendarGrid"></div>
             </div>
 
             <div class="selected-day profile-selected-day">
-                <h3>Selected Day: March 26</h3>
-
-                <div class="event-row">
-                    <span>Julia's Birthday</span>
-                    <span>5:00pm Demoss</span>
-                </div>
-
-                <div class="event-row">
-                    <span>Party at the Hill</span>
-                    <span>8:13pm Hill</span>
-                </div>
-
-                <div class="no-events">No more events...</div>
+                <h3 id="profileSelectedHeading">Selected Day</h3>
+                <div id="profileSelectedEvents"></div>
             </div>
         </section>
     </main>
@@ -130,6 +89,187 @@
                     userLink.href = 'auth.html';
                 }
             }
+
+            const firstNameInput = document.getElementById('first-name');
+            const lastNameInput = document.getElementById('last-name');
+            const phoneInput = document.getElementById('phone');
+            const emailInput = document.getElementById('email');
+            const collegeInput = document.getElementById('college');
+            const saveProfileBtn = document.getElementById('saveProfileBtn');
+
+            firstNameInput.value = localStorage.getItem('campCalProfileFirstName') || '';
+            lastNameInput.value = localStorage.getItem('campCalProfileLastName') || '';
+            phoneInput.value = localStorage.getItem('campCalProfilePhone') || '';
+            emailInput.value = localStorage.getItem('campCalProfileEmail') || '';
+            collegeInput.value = localStorage.getItem('campCalProfileCollege') || 'Liberty University';
+
+            saveProfileBtn.addEventListener('click', () => {
+                localStorage.setItem('campCalProfileFirstName', firstNameInput.value.trim());
+                localStorage.setItem('campCalProfileLastName', lastNameInput.value.trim());
+                localStorage.setItem('campCalProfilePhone', phoneInput.value.trim());
+                localStorage.setItem('campCalProfileEmail', emailInput.value.trim());
+                localStorage.setItem('campCalProfileCollege', collegeInput.value);
+
+                const fullName = `${firstNameInput.value.trim()} ${lastNameInput.value.trim()}`.trim();
+                if (fullName) {
+                    localStorage.setItem('campCalUser', fullName);
+                }
+
+                alert('Profile saved.');
+            });
+
+            const starterEvents = [
+                { id: 1, title: 'Tennis Meetup', date: '2026-03-10', time: '14:00', location: 'Liberty Tennis Courts', category: 'sports' },
+                { id: 2, title: 'Basketball Pickup Game', date: '2026-03-11', time: '18:00', location: 'Campus Recreation Center', category: 'sports' },
+                { id: 3, title: 'Yoga in the Park', date: '2026-03-12', time: '09:00', location: 'Riverside Park', category: 'wellness' },
+                { id: 4, title: 'Study Group: Calculus I', date: '2026-03-12', time: '19:00', location: 'Library Room 201', category: 'academic' },
+                { id: 5, title: 'Computer Science Club Meeting', date: '2026-03-13', time: '17:00', location: 'Engineering Hall 105', category: 'academic' },
+                { id: 6, title: 'Open Mic Night', date: '2026-04-08', time: '20:00', location: 'Student Lounge', category: 'social' },
+                { id: 7, title: 'Gardening Workshop', date: '2026-04-10', time: '15:00', location: 'Campus Garden', category: 'education' },
+                { id: 8, title: 'Spring Concert', date: '2026-04-12', time: '18:30', location: 'Campus Auditorium', category: 'music' }
+            ];
+
+            const createdEvents = JSON.parse(localStorage.getItem('campCalCreatedEvents')) || [];
+            const allEvents = [...starterEvents, ...createdEvents];
+
+            let profileCurrentDate = new Date();
+            let selectedDateStr = formatDateLocal(new Date());
+
+            const profileCalendarGrid = document.getElementById('profileCalendarGrid');
+            const profileMonthLabel = document.getElementById('profileMonthLabel');
+            const profileSelectedHeading = document.getElementById('profileSelectedHeading');
+            const profileSelectedEvents = document.getElementById('profileSelectedEvents');
+            const profilePrevMonth = document.getElementById('profilePrevMonth');
+            const profileNextMonth = document.getElementById('profileNextMonth');
+
+            function formatDateLocal(dateObj) {
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            function formatReadableDate(dateStr) {
+                const dateObj = new Date(`${dateStr}T00:00:00`);
+                return dateObj.toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
+
+            function formatTime(timeStr) {
+                if (!timeStr) return '';
+                const [hourStr, minute] = timeStr.split(':');
+                let hour = parseInt(hourStr, 10);
+                const ampm = hour >= 12 ? 'PM' : 'AM';
+                hour = hour % 12 || 12;
+                return `${hour}:${minute} ${ampm}`;
+            }
+
+            function getEventsForDate(dateStr) {
+                return allEvents
+                    .filter(event => event.date === dateStr)
+                    .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}:00`) - new Date(`${b.date}T${b.time || '00:00'}:00`));
+            }
+
+            function renderProfileSelectedDay(dateStr) {
+                selectedDateStr = dateStr;
+                profileSelectedHeading.textContent = `Selected Day: ${formatReadableDate(dateStr)}`;
+
+                const dayEvents = getEventsForDate(dateStr);
+
+                if (dayEvents.length === 0) {
+                    profileSelectedEvents.innerHTML = '<div class="no-events">No events for this day.</div>';
+                    return;
+                }
+
+                profileSelectedEvents.innerHTML = dayEvents.map(event => `
+                    <div class="event-row">
+                        <div>
+                            <strong>${event.title}</strong><br>
+                            <small>${event.location}</small>
+                        </div>
+                        <div>${formatTime(event.time)}</div>
+                    </div>
+                `).join('');
+            }
+
+            function renderProfileCalendar() {
+                const year = profileCurrentDate.getFullYear();
+                const month = profileCurrentDate.getMonth();
+
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const startDayIndex = firstDay.getDay();
+                const daysInMonth = lastDay.getDate();
+
+                profileMonthLabel.textContent = firstDay.toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric'
+                });
+
+                profileCalendarGrid.innerHTML = '';
+
+                for (let i = 0; i < startDayIndex; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'profile-mini-day empty';
+                    profileCalendarGrid.appendChild(emptyCell);
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const cellDate = new Date(year, month, day);
+                    const dateStr = formatDateLocal(cellDate);
+                    const dayEvents = getEventsForDate(dateStr);
+
+                    const cell = document.createElement('div');
+                    cell.className = 'profile-mini-day';
+
+                    if (dateStr === formatDateLocal(new Date())) {
+                        cell.classList.add('today');
+                    }
+
+                    if (dateStr === selectedDateStr) {
+                        cell.classList.add('selected');
+                    }
+
+                    cell.innerHTML = `
+                        <span class="profile-mini-day-number">${day}</span>
+                        ${dayEvents.length > 0 ? '<span class="profile-mini-marker"></span>' : ''}
+                    `;
+
+                    cell.addEventListener('click', () => {
+                        renderProfileSelectedDay(dateStr);
+                        renderProfileCalendar();
+                    });
+
+                    profileCalendarGrid.appendChild(cell);
+                }
+            }
+
+            profilePrevMonth.addEventListener('click', () => {
+                profileCurrentDate = new Date(profileCurrentDate.getFullYear(), profileCurrentDate.getMonth() - 1, 1);
+                renderProfileCalendar();
+            });
+
+            profileNextMonth.addEventListener('click', () => {
+                profileCurrentDate = new Date(profileCurrentDate.getFullYear(), profileCurrentDate.getMonth() + 1, 1);
+                renderProfileCalendar();
+            });
+
+            const firstEventDate = allEvents.length
+                ? allEvents
+                    .slice()
+                    .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}:00`) - new Date(`${b.date}T${b.time || '00:00'}:00`))[0].date
+                : formatDateLocal(new Date());
+
+            if (!allEvents.some(event => event.date === selectedDateStr)) {
+                selectedDateStr = firstEventDate;
+                profileCurrentDate = new Date(`${firstEventDate}T00:00:00`);
+            }
+
+            renderProfileSelectedDay(selectedDateStr);
+            renderProfileCalendar();
         });
     </script>
     
