@@ -97,6 +97,24 @@
             const collegeInput = document.getElementById('college');
             const saveProfileBtn = document.getElementById('saveProfileBtn');
 
+            function formatPhoneNumber(value) {
+                const digits = value.replace(/\D/g, '').substring(0, 10);
+
+                const part1 = digits.substring(0, 3);
+                const part2 = digits.substring(3, 6);
+                const part3 = digits.substring(6, 10);
+
+                if (digits.length > 6) {
+                    return `(${part1}) ${part2}-${part3}`;
+                } else if (digits.length > 3) {
+                    return `(${part1}) ${part2}`;
+                } else if (digits.length > 0) {
+                    return `(${part1}`;
+                }
+
+                return '';
+            }
+
             firstNameInput.value = localStorage.getItem('campCalProfileFirstName') || '';
             lastNameInput.value = localStorage.getItem('campCalProfileLastName') || '';
             phoneInput.value = formatPhoneNumber(
@@ -124,20 +142,7 @@
                 alert('Profile saved.');
             });
 
-            const starterEvents = [
-                { id: 1, title: 'Tennis Meetup', date: '2026-03-10', time: '14:00', location: 'Liberty Tennis Courts', category: 'sports' },
-                { id: 2, title: 'Basketball Pickup Game', date: '2026-03-11', time: '18:00', location: 'Campus Recreation Center', category: 'sports' },
-                { id: 3, title: 'Yoga in the Park', date: '2026-03-12', time: '09:00', location: 'Riverside Park', category: 'wellness' },
-                { id: 4, title: 'Study Group: Calculus I', date: '2026-03-12', time: '19:00', location: 'Library Room 201', category: 'academic' },
-                { id: 5, title: 'Computer Science Club Meeting', date: '2026-03-13', time: '17:00', location: 'Engineering Hall 105', category: 'academic' },
-                { id: 6, title: 'Open Mic Night', date: '2026-04-08', time: '20:00', location: 'Student Lounge', category: 'social' },
-                { id: 7, title: 'Gardening Workshop', date: '2026-04-10', time: '15:00', location: 'Campus Garden', category: 'education' },
-                { id: 8, title: 'Spring Concert', date: '2026-04-12', time: '18:30', location: 'Campus Auditorium', category: 'music' }
-            ];
-
-            const createdEvents = JSON.parse(localStorage.getItem('campCalCreatedEvents')) || [];
-            const allEvents = [...starterEvents, ...createdEvents];
-
+            let allEvents = [];
             let profileCurrentDate = new Date();
             let selectedDateStr = formatDateLocal(new Date());
 
@@ -147,24 +152,6 @@
             const profileSelectedEvents = document.getElementById('profileSelectedEvents');
             const profilePrevMonth = document.getElementById('profilePrevMonth');
             const profileNextMonth = document.getElementById('profileNextMonth');
-
-            function formatPhoneNumber(value) {
-                const digits = value.replace(/\D/g, '').substring(0, 10);
-
-                const part1 = digits.substring(0, 3);
-                const part2 = digits.substring(3, 6);
-                const part3 = digits.substring(6, 10);
-
-                if (digits.length > 6) {
-                    return `(${part1}) ${part2}-${part3}`;
-                } else if (digits.length > 3) {
-                    return `(${part1}) ${part2}`;
-                } else if (digits.length > 0) {
-                    return `(${part1}`;
-                }
-
-                return '';
-            }
 
             function formatDateLocal(dateObj) {
                 const year = dateObj.getFullYear();
@@ -194,7 +181,43 @@
             function getEventsForDate(dateStr) {
                 return allEvents
                     .filter(event => event.date === dateStr)
-                    .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}:00`) - new Date(`${b.date}T${b.time || '00:00'}:00`));
+                    .sort((a, b) => {
+                        return new Date(`${a.date}T${a.time || '00:00'}:00`) -
+                               new Date(`${b.date}T${b.time || '00:00'}:00`);
+                    });
+            }
+
+            async function loadAllEvents() {
+                try {
+                    const response = await fetch('events.json');
+                    const jsonData = await response.json();
+
+                    const starterEvents = jsonData.events || [];
+                    const createdEvents = JSON.parse(localStorage.getItem('campCalCreatedEvents')) || [];
+
+                    allEvents = [...starterEvents, ...createdEvents];
+                } catch (error) {
+                    console.error('Failed to load events.json:', error);
+                    const createdEvents = JSON.parse(localStorage.getItem('campCalCreatedEvents')) || [];
+                    allEvents = [...createdEvents];
+                }
+
+                const firstEventDate = allEvents.length
+                    ? allEvents
+                        .slice()
+                        .sort((a, b) => {
+                            return new Date(`${a.date}T${a.time || '00:00'}:00`) -
+                                   new Date(`${b.date}T${b.time || '00:00'}:00`);
+                        })[0].date
+                    : formatDateLocal(new Date());
+
+                if (!allEvents.some(event => event.date === selectedDateStr)) {
+                    selectedDateStr = firstEventDate;
+                    profileCurrentDate = new Date(`${firstEventDate}T00:00:00`);
+                }
+
+                renderProfileSelectedDay(selectedDateStr);
+                renderProfileCalendar();
             }
 
             function renderProfileSelectedDay(dateStr) {
@@ -272,28 +295,24 @@
             }
 
             profilePrevMonth.addEventListener('click', () => {
-                profileCurrentDate = new Date(profileCurrentDate.getFullYear(), profileCurrentDate.getMonth() - 1, 1);
+                profileCurrentDate = new Date(
+                    profileCurrentDate.getFullYear(),
+                    profileCurrentDate.getMonth() - 1,
+                    1
+                );
                 renderProfileCalendar();
             });
 
             profileNextMonth.addEventListener('click', () => {
-                profileCurrentDate = new Date(profileCurrentDate.getFullYear(), profileCurrentDate.getMonth() + 1, 1);
+                profileCurrentDate = new Date(
+                    profileCurrentDate.getFullYear(),
+                    profileCurrentDate.getMonth() + 1,
+                    1
+                );
                 renderProfileCalendar();
             });
 
-            const firstEventDate = allEvents.length
-                ? allEvents
-                    .slice()
-                    .sort((a, b) => new Date(`${a.date}T${a.time || '00:00'}:00`) - new Date(`${b.date}T${b.time || '00:00'}:00`))[0].date
-                : formatDateLocal(new Date());
-
-            if (!allEvents.some(event => event.date === selectedDateStr)) {
-                selectedDateStr = firstEventDate;
-                profileCurrentDate = new Date(`${firstEventDate}T00:00:00`);
-            }
-
-            renderProfileSelectedDay(selectedDateStr);
-            renderProfileCalendar();
+            loadAllEvents();
         });
     </script>
     

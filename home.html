@@ -69,101 +69,7 @@
                 }
             }
 
-            const starterEvents = [
-                {
-                    id: 1,
-                    title: 'Tennis Meetup',
-                    date: '2026-03-10',
-                    time: '14:00',
-                    location: 'Liberty Tennis Courts',
-                    description: 'Come meet up with us at the Liberty Tennis Courts, play a couple games!',
-                    category: 'sports'
-                },
-                {
-                    id: 2,
-                    title: 'Basketball Pickup Game',
-                    date: '2026-03-11',
-                    time: '18:00',
-                    location: 'Campus Recreation Center',
-                    description: 'Join us for a casual pickup basketball game. All skill levels welcome!',
-                    category: 'sports'
-                },
-                {
-                    id: 3,
-                    title: 'Yoga in the Park',
-                    date: '2026-03-12',
-                    time: '09:00',
-                    location: 'Riverside Park',
-                    description: 'Start your morning with a relaxing yoga session.',
-                    category: 'wellness'
-                },
-                {
-                    id: 4,
-                    title: 'Study Group: Calculus I',
-                    date: '2026-03-12',
-                    time: '19:00',
-                    location: 'Library Room 201',
-                    description: 'Collaborative study session for upcoming calculus exam.',
-                    category: 'academic'
-                },
-                {
-                    id: 5,
-                    title: 'Computer Science Club Meeting',
-                    date: '2026-03-13',
-                    time: '17:00',
-                    location: 'Engineering Hall 105',
-                    description: 'Weekly meeting to discuss projects and tech topics.',
-                    category: 'academic'
-                },
-                {
-                    id: 6,
-                    title: 'Open Mic Night',
-                    date: '2026-04-08',
-                    time: '20:00',
-                    location: 'Student Lounge',
-                    description: 'Show off your talent in music, comedy, or poetry.',
-                    category: 'social'
-                },
-                {
-                    id: 7,
-                    title: 'Gardening Workshop',
-                    date: '2026-04-10',
-                    time: '15:00',
-                    location: 'Campus Garden',
-                    description: 'Learn how to plant and care for spring flowers.',
-                    category: 'education'
-                },
-                {
-                    id: 8,
-                    title: 'Spring Concert',
-                    date: '2026-04-12',
-                    time: '18:30',
-                    location: 'Campus Auditorium',
-                    description: 'Enjoy live performances by student bands.',
-                    category: 'music'
-                },
-                {
-                    id: 9,
-                    title: 'Trivia Night',
-                    date: '2026-04-15',
-                    time: '19:30',
-                    location: 'Campus Cafe',
-                    description: 'Test your knowledge and win prizes.',
-                    category: 'social'
-                },
-                {
-                    id: 10,
-                    title: 'Board Game Night',
-                    date: '2026-04-22',
-                    time: '18:00',
-                    location: 'Student Lounge',
-                    description: 'Play board games and meet new friends.',
-                    category: 'social'
-                }
-            ];
-
-            const createdEvents = JSON.parse(localStorage.getItem('campCalCreatedEvents')) || [];
-            const allEvents = [...starterEvents, ...createdEvents];
+            let allEvents = [];
 
             const categoryClasses = {
                 sports: 'event-chip sports',
@@ -173,7 +79,15 @@
                 education: 'event-chip education',
                 music: 'event-chip music',
                 workshop: 'event-chip workshop',
-                seminar: 'event-chip seminar'
+                seminar: 'event-chip seminar',
+                creative: 'event-chip default',
+                arts: 'event-chip default',
+                outdoor: 'event-chip default',
+                community: 'event-chip default',
+                service: 'event-chip default',
+                career: 'event-chip default',
+                lifestyle: 'event-chip default',
+                games: 'event-chip default'
             };
 
             let currentDate = new Date();
@@ -222,7 +136,25 @@
             }
 
             function getEventsForDate(dateStr) {
-                return sortEventsByDateTime(allEvents.filter(event => event.date === dateStr));
+                return sortEventsByDateTime(
+                    allEvents.filter(event => event.date === dateStr)
+                );
+            }
+
+            async function loadAllEvents() {
+                try {
+                    const response = await fetch('events.json');
+                    const jsonData = await response.json();
+
+                    const starterEvents = jsonData.events || [];
+                    const createdEvents = JSON.parse(localStorage.getItem('campCalCreatedEvents')) || [];
+
+                    return [...starterEvents, ...createdEvents];
+                } catch (error) {
+                    console.error('Failed to load events.json:', error);
+                    const createdEvents = JSON.parse(localStorage.getItem('campCalCreatedEvents')) || [];
+                    return [...createdEvents];
+                }
             }
 
             function renderUpcomingEvents() {
@@ -254,7 +186,7 @@
             }
 
             function renderSelectedDay(dateStr) {
-                selectedDayStr = dateStr;
+                selectedDateStr = dateStr;
                 selectedDayHeading.textContent = `Selected Day: ${formatReadableDate(dateStr)}`;
 
                 const events = getEventsForDate(dateStr);
@@ -310,7 +242,7 @@
                         cell.classList.add('today');
                     }
 
-                    if (dateStr === selectedDayStr) {
+                    if (dateStr === selectedDateStr) {
                         cell.classList.add('selected');
                     }
 
@@ -357,19 +289,21 @@
                 renderCalendar();
             });
 
-            if (!allEvents.some(event => event.date === selectedDateStr)) {
-                const sorted = sortEventsByDateTime(allEvents);
-                if (sorted.length > 0) {
-                    selectedDateStr = sorted[0].date;
-                    currentDate = new Date(`${selectedDateStr}T00:00:00`);
-                }
-            } else {
-                currentDate = new Date();
-            }
+            loadAllEvents().then(events => {
+                allEvents = events;
 
-            renderUpcomingEvents();
-            renderSelectedDay(selectedDateStr);
-            renderCalendar();
+                if (!allEvents.some(event => event.date === selectedDateStr)) {
+                    const sorted = sortEventsByDateTime(allEvents);
+                    if (sorted.length > 0) {
+                        selectedDateStr = sorted[0].date;
+                        currentDate = new Date(`${sorted[0].date}T00:00:00`);
+                    }
+                }
+
+                renderUpcomingEvents();
+                renderSelectedDay(selectedDateStr);
+                renderCalendar();
+            });
         });
     </script>
 </body>
