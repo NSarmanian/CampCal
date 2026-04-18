@@ -13,6 +13,7 @@
             <a href="home.html">Home</a>
             <a href="home.html">Calendar</a>
             <a href="eventCreation.html">Create Event</a>
+            <a href="leaderboard.html">Leaderboard</a>
             <a href="profileSettings.html">User Profile</a>
         </nav>
         <div class="user"><a href="auth.html">Log In</a></div>
@@ -54,8 +55,13 @@
         </main>
     </div>
 
+    <script src="src/gamification.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            if (window.CampCalGamification) {
+                window.CampCalGamification.init();
+            }
+
             const savedName = localStorage.getItem('campCalUser');
             const userLink = document.querySelector('.user a');
 
@@ -100,6 +106,75 @@
             const upcomingEvents = document.getElementById('upcomingEvents');
             const prevMonthBtn = document.getElementById('prevMonthBtn');
             const nextMonthBtn = document.getElementById('nextMonthBtn');
+
+            function getEventRsvpState(event) {
+                const currentUser = (savedName || '').trim();
+                const hasRsvped = window.CampCalGamification
+                    ? window.CampCalGamification.hasRsvped(event.id, currentUser)
+                    : false;
+                const attendeeCount = window.CampCalGamification
+                    ? window.CampCalGamification.getRsvpCount(event.id)
+                    : 0;
+                const isHostedByUser = currentUser && event.createdBy && event.createdBy === currentUser;
+
+                return {
+                    attendeeCount,
+                    hasRsvped,
+                    isHostedByUser,
+                    buttonLabel: !currentUser
+                        ? 'Log in to RSVP'
+                        : hasRsvped
+                            ? "RSVP'd"
+                            : isHostedByUser
+                                ? 'Join your event'
+                                : 'RSVP',
+                    buttonDisabled: Boolean(currentUser && hasRsvped)
+                };
+            }
+
+            function handleRsvpClick(eventId) {
+                if (!window.CampCalGamification) {
+                    return;
+                }
+
+                const currentUser = (savedName || '').trim();
+                if (!currentUser) {
+                    window.location.href = 'auth.html';
+                    return;
+                }
+
+                const eventData = allEvents.find(event => String(event.id) === String(eventId));
+                if (!eventData) {
+                    return;
+                }
+
+                const result = window.CampCalGamification.rsvpEvent(eventData, currentUser);
+
+                if (!result.success && result.duplicate) {
+                    renderUpcomingEvents();
+                    renderSelectedDay(selectedDateStr);
+                    renderCalendar();
+                    return;
+                }
+
+                if (!result.success) {
+                    alert(result.reason || 'Could not RSVP to this event.');
+                    return;
+                }
+
+                renderUpcomingEvents();
+                renderSelectedDay(selectedDateStr);
+                renderCalendar();
+            }
+
+            function wireRsvpButtons(scopeElement) {
+                scopeElement.querySelectorAll('.rsvp-btn[data-event-id]').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        handleRsvpClick(button.dataset.eventId);
+                    });
+                });
+            }
 
             function formatDateLocal(dateObj) {
                 const year = dateObj.getFullYear();
@@ -173,16 +248,33 @@
                     return;
                 }
 
-                upcomingEvents.innerHTML = upcoming.map(event => `
-                    <div class="event-card">
+                upcomingEvents.innerHTML = upcoming.map(event => {
+                    const rsvpState = getEventRsvpState(event);
+
+                    return `
+                    <div class="event-card event-card-gamified">
                         <div class="event-header">
                             <span>${event.title}</span>
                             <span>${formatTime(event.time)}</span>
                         </div>
                         <div class="event-meta">${formatReadableDate(event.date)}</div>
                         <div class="event-meta">${event.location}</div>
+
+                        <div class="event-card-footer">
+                            <span class="event-rsvp-count">${rsvpState.attendeeCount} ${rsvpState.attendeeCount === 1 ? 'RSVP' : 'RSVPs'}</span>
+                            <button
+                                type="button"
+                                class="rsvp-btn ${rsvpState.hasRsvped ? 'rsvp-btn-active' : ''}"
+                                data-event-id="${event.id}"
+                                ${rsvpState.buttonDisabled ? 'disabled' : ''}
+                            >${rsvpState.buttonLabel}</button>
+                        </div>
+                        ${event.createdBy && event.createdBy === savedName ? '<div class="event-host-badge">Hosted by you</div>' : ''}
                     </div>
-                `).join('');
+                `;
+                }).join('');
+
+                wireRsvpButtons(upcomingEvents);
             }
 
             function renderSelectedDay(dateStr) {
@@ -196,15 +288,34 @@
                     return;
                 }
 
-                selectedDayEvents.innerHTML = events.map(event => `
-                    <div class="event-row">
+                selectedDayEvents.innerHTML = events.map(event => {
+                    const rsvpState = getEventRsvpState(event);
+
+                    return `
+                    <div class="event-row event-row-gamified">
                         <div>
                             <strong>${event.title}</strong><br>
                             <small>${event.location}</small>
+                            ${event.createdBy && event.createdBy === savedName ? '<div class="event-host-badge event-host-badge-inline">Hosted by you</div>' : ''}
                         </div>
-                        <div>${formatTime(event.time)}</div>
+
+                        <div class="event-row-actions">
+                            <div class="event-row-time">${formatTime(event.time)}</div>
+                            <div class="event-row-meta">
+                                <span>${rsvpState.attendeeCount} ${rsvpState.attendeeCount === 1 ? 'RSVP' : 'RSVPs'}</span>
+                                <button
+                                    type="button"
+                                    class="rsvp-btn ${rsvpState.hasRsvped ? 'rsvp-btn-active' : ''}"
+                                    data-event-id="${event.id}"
+                                    ${rsvpState.buttonDisabled ? 'disabled' : ''}
+                                >${rsvpState.buttonLabel}</button>
+                            </div>
+                        </div>
                     </div>
-                `).join('');
+                `;
+                }).join('');
+
+                wireRsvpButtons(selectedDayEvents);
             }
 
             function renderCalendar() {

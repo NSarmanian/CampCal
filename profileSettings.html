@@ -13,6 +13,7 @@
             <a href="home.html">Home</a>
             <a href="home.html">Calendar</a>
             <a href="eventCreation.html">Create Event</a>
+            <a href="leaderboard.html">Leaderboard</a>
             <a href="profileSettings.html">User Profile</a>
         </nav>
         <div class="user"><a href="auth.html">Log In</a></div>
@@ -43,6 +44,55 @@
 
             <button class="profile-submit" id="saveProfileBtn">Save Profile</button>
             <a class="profile-secondary-link" href="profilePreferences.html">Go to Profile Preferences</a>
+
+            <div class="card points-hud">
+                <div class="points-hud-top">
+                    <div>
+                        <p class="points-kicker">Game stats</p>
+                        <h2>My Points</h2>
+                    </div>
+                    <div class="points-rank" id="settingsPointsRank">Bronze</div>
+                </div>
+
+                <div class="points-scoreboard">
+                    <div class="points-score-pill">
+                        <span class="points-label">Semester</span>
+                        <strong id="settingsPointsSemesterTotal">0</strong>
+                    </div>
+                    <div class="points-score-pill points-score-pill-highlight">
+                        <span class="points-label">Lifetime</span>
+                        <strong id="settingsPointsLifetimeTotal">0</strong>
+                    </div>
+                </div>
+
+                <p class="points-semester-label" id="settingsPointsSemesterLabel">Season: N/A</p>
+
+                <div class="points-progress-wrap">
+                    <div class="points-progress-head">
+                        <span>Next rank</span>
+                        <span id="settingsPointsNextRankLabel">Silver at 250</span>
+                    </div>
+                    <div class="points-progress-track">
+                        <div class="points-progress-fill" id="settingsPointsProgressFill"></div>
+                    </div>
+                </div>
+
+                <div class="points-action-area">
+                    <div class="points-action-header">
+                        <span>Recent action log</span>
+                        <span id="settingsPointsActionCount">0 actions</span>
+                    </div>
+                    <div id="settingsRecentActionsList" class="recent-actions-list"></div>
+                </div>
+
+                <div class="points-history-area">
+                    <div class="points-action-header">
+                        <span>Semester archive</span>
+                        <span>Recent resets</span>
+                    </div>
+                    <div id="settingsHistoryList" class="history-list"></div>
+                </div>
+            </div>
         </section>
 
         <section class="profile-calendar-panel">
@@ -75,8 +125,13 @@
         </section>
     </main>
 
+    <script src="src/gamification.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            if (window.CampCalGamification) {
+                window.CampCalGamification.init();
+            }
+
             const savedName = localStorage.getItem('campCalUser');
             const userLink = document.querySelector('.user a');
 
@@ -96,6 +151,15 @@
             const emailInput = document.getElementById('email');
             const collegeInput = document.getElementById('college');
             const saveProfileBtn = document.getElementById('saveProfileBtn');
+            const settingsPointsRank = document.getElementById('settingsPointsRank');
+            const settingsPointsSemesterLabel = document.getElementById('settingsPointsSemesterLabel');
+            const settingsPointsSemesterTotal = document.getElementById('settingsPointsSemesterTotal');
+            const settingsPointsLifetimeTotal = document.getElementById('settingsPointsLifetimeTotal');
+            const settingsPointsNextRankLabel = document.getElementById('settingsPointsNextRankLabel');
+            const settingsPointsProgressFill = document.getElementById('settingsPointsProgressFill');
+            const settingsPointsActionCount = document.getElementById('settingsPointsActionCount');
+            const settingsRecentActionsList = document.getElementById('settingsRecentActionsList');
+            const settingsHistoryList = document.getElementById('settingsHistoryList');
 
             function formatPhoneNumber(value) {
                 const digits = value.replace(/\D/g, '').substring(0, 10);
@@ -141,6 +205,108 @@
 
                 alert('Profile saved.');
             });
+
+            function getActionLabel(actionType) {
+                if (actionType === 'CREATE_EVENT') return 'Created event';
+                if (actionType === 'RSVP_EVENT') return 'RSVP to event';
+                if (actionType === 'RSVP_RECEIVED') return 'Received RSVP';
+                return actionType;
+            }
+
+            function getRankInfo(lifetimePoints) {
+                if (lifetimePoints >= 1000) {
+                    return { rank: 'Legend', currentFloor: 1000, nextRank: 'Hall of Fame', nextThreshold: 1500 };
+                }
+
+                if (lifetimePoints >= 500) {
+                    return { rank: 'Gold', currentFloor: 500, nextRank: 'Legend', nextThreshold: 1000 };
+                }
+
+                if (lifetimePoints >= 250) {
+                    return { rank: 'Silver', currentFloor: 250, nextRank: 'Gold', nextThreshold: 500 };
+                }
+
+                return { rank: 'Bronze', currentFloor: 0, nextRank: 'Silver', nextThreshold: 250 };
+            }
+
+            function formatArchiveDate(isoDate) {
+                if (!isoDate) {
+                    return 'Unknown date';
+                }
+
+                return new Date(isoDate).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
+
+            function renderHistoryArchive() {
+                if (!window.CampCalGamification) {
+                    return;
+                }
+
+                const history = window.CampCalGamification.getSemesterHistory(4);
+                if (!history.length) {
+                    settingsHistoryList.innerHTML = '<p class="points-empty">No archived semesters yet.</p>';
+                    return;
+                }
+
+                settingsHistoryList.innerHTML = history.map(entry => {
+                    const winner = Array.isArray(entry.leaderboard) && entry.leaderboard.length
+                        ? entry.leaderboard[0]
+                        : null;
+
+                    return `
+                        <div class="history-row">
+                            <div>
+                                <strong>${entry.semesterId}</strong>
+                                <div class="history-sub">Archived ${formatArchiveDate(entry.archivedAt)}</div>
+                            </div>
+                            <div class="history-meta">
+                                ${winner ? `<span>Winner: ${winner.userName} (${winner.semesterPoints})</span>` : '<span>No winner</span>'}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function renderPointsCard() {
+                if (!window.CampCalGamification) {
+                    return;
+                }
+
+                const summary = window.CampCalGamification.getUserSummary(savedName || '');
+                const rankInfo = getRankInfo(summary.lifetimePoints);
+                const progressSpan = rankInfo.nextThreshold - rankInfo.currentFloor;
+                const progressValue = Math.max(0, summary.lifetimePoints - rankInfo.currentFloor);
+                const progressPercent = progressSpan > 0 ? Math.min(100, (progressValue / progressSpan) * 100) : 100;
+
+                settingsPointsRank.textContent = rankInfo.rank;
+                settingsPointsSemesterLabel.textContent = `Season: ${summary.semesterId}`;
+                settingsPointsSemesterTotal.textContent = summary.semesterPoints;
+                settingsPointsLifetimeTotal.textContent = summary.lifetimePoints;
+                settingsPointsNextRankLabel.textContent = `${rankInfo.nextRank} at ${rankInfo.nextThreshold}`;
+                settingsPointsProgressFill.style.width = `${progressPercent}%`;
+                settingsPointsActionCount.textContent = `${summary.recentActions.length} actions`;
+
+                if (!summary.recentActions.length) {
+                    settingsRecentActionsList.innerHTML = '<p class="points-empty">No logged actions yet.</p>';
+                    return;
+                }
+
+                settingsRecentActionsList.innerHTML = summary.recentActions.map(action => {
+                    const label = getActionLabel(action.actionType);
+                    const title = action.eventTitle ? `: ${action.eventTitle}` : '';
+                    return `
+                        <div class="points-action-row points-action-row-${action.actionType.toLowerCase()}">
+                            <span class="points-action-icon">★</span>
+                            <span>${label}${title}</span>
+                            <strong>+${action.pointsDelta}</strong>
+                        </div>
+                    `;
+                }).join('');
+            }
 
             let allEvents = [];
             let profileCurrentDate = new Date();
@@ -313,6 +479,8 @@
             });
 
             loadAllEvents();
+            renderPointsCard();
+            renderHistoryArchive();
         });
     </script>
     

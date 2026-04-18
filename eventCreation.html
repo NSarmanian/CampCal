@@ -14,6 +14,7 @@
             <a href="home.html">Home</a>
             <a href="home.html">Calendar</a>
             <a href="eventCreation.html">Create Event</a>
+            <a href="leaderboard.html">Leaderboard</a>
             <a href="profileSettings.html">User Profile</a>
         </nav>
         <div class="user"><a href="auth.html">Log In</a></div>
@@ -117,8 +118,13 @@
         </form>
     </div>
 
+    <script src="src/gamification.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            if (window.CampCalGamification) {
+                window.CampCalGamification.init();
+            }
+
             const savedName = localStorage.getItem('campCalUser');
             const userLink = document.querySelector('.user a');
             const form = document.getElementById('eventForm');
@@ -197,11 +203,19 @@
                     description,
                     category,
                     audience,
+                    createdBy: savedName || null,
                     tags: [category, audience]
                 };
 
                 storedEvents.push(newEvent);
                 localStorage.setItem('campCalCreatedEvents', JSON.stringify(storedEvents));
+
+                if (window.CampCalGamification) {
+                    window.CampCalGamification.awardAction('CREATE_EVENT', {
+                        eventId: newEvent.id,
+                        eventTitle: newEvent.title
+                    });
+                }
 
                 formMessage.textContent = 'Event created successfully!';
                 formMessage.className = 'form-message success';
