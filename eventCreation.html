@@ -131,14 +131,8 @@
             const formMessage = document.getElementById('formMessage');
             const cancelBtn = document.getElementById('cancelBtn');
 
-            if (userLink) {
-                if (savedName) {
-                    userLink.textContent = `Welcome, ${savedName}`;
-                    userLink.href = 'profilePreferences.html';
-                } else {
-                    userLink.textContent = 'Log In';
-                    userLink.href = 'auth.html';
-                }
+            if (window.CampCalGamification) {
+                window.CampCalGamification.applyNavbarUserLink(userLink, savedName);
             }
 
             cancelBtn.addEventListener('click', () => {

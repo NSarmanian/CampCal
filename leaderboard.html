@@ -47,14 +47,28 @@
             const leaderboardSeasonLabel = document.getElementById('leaderboardSeasonLabel');
             const leaderboardPageList = document.getElementById('leaderboardPageList');
 
-            if (userLink) {
-                if (savedName) {
-                    userLink.textContent = `Welcome, ${savedName}`;
-                    userLink.href = 'profilePreferences.html';
-                } else {
-                    userLink.textContent = 'Log In';
-                    userLink.href = 'auth.html';
+            function getTierInfo(points) {
+                if (points >= 1500) {
+                    return { label: 'Diamond', className: 'tier-diamond' };
                 }
+
+                if (points >= 1000) {
+                    return { label: 'Emerald', className: 'tier-emerald' };
+                }
+
+                if (points >= 500) {
+                    return { label: 'Gold', className: 'tier-gold' };
+                }
+
+                if (points >= 250) {
+                    return { label: 'Silver', className: 'tier-silver' };
+                }
+
+                return { label: 'Bronze', className: 'tier-bronze' };
+            }
+
+            if (window.CampCalGamification) {
+                window.CampCalGamification.applyNavbarUserLink(userLink, savedName);
             }
 
             if (!window.CampCalGamification) {
@@ -76,10 +90,14 @@
 
             leaderboardPageList.innerHTML = leaderboard.entries.map(entry => {
                 const isCurrentUser = savedName && entry.userName === savedName;
+                const tierInfo = getTierInfo(entry.semesterPoints);
                 return `
                     <div class="leaderboard-row leaderboard-row-page ${isCurrentUser ? 'leaderboard-row-current' : ''}">
                         <span class="leaderboard-rank">#${entry.rank}</span>
-                        <span class="leaderboard-user">${entry.userName}</span>
+                        <span class="leaderboard-user">
+                            <span class="leaderboard-tier ${tierInfo.className}">${tierInfo.label}</span>
+                            ${entry.userName}
+                        </span>
                         <strong class="leaderboard-score">${entry.semesterPoints}</strong>
                     </div>
                 `;

@@ -23,6 +23,53 @@
         return `${year}-${term}`;
     }
 
+    function getLifetimeRankInfo(lifetimePoints) {
+        if (lifetimePoints >= 1000) {
+            return { rank: 'Legend', className: 'user-badge-legend', nextRank: 'Hall of Fame', nextThreshold: 1500 };
+        }
+
+        if (lifetimePoints >= 500) {
+            return { rank: 'Gold', className: 'user-badge-gold', nextRank: 'Legend', nextThreshold: 1000 };
+        }
+
+        if (lifetimePoints >= 250) {
+            return { rank: 'Silver', className: 'user-badge-silver', nextRank: 'Gold', nextThreshold: 500 };
+        }
+
+        return { rank: 'Bronze', className: 'user-badge-bronze', nextRank: 'Silver', nextThreshold: 250 };
+    }
+
+    function getUserBadgeInfo(userName) {
+        const summary = getUserSummary(userName);
+        const rankInfo = getLifetimeRankInfo(summary.lifetimePoints || 0);
+
+        return {
+            userName: summary.userName,
+            lifetimePoints: summary.lifetimePoints || 0,
+            rank: rankInfo.rank,
+            className: rankInfo.className,
+            nextRank: rankInfo.nextRank,
+            nextThreshold: rankInfo.nextThreshold
+        };
+    }
+
+    function applyNavbarUserLink(userLink, userName) {
+        if (!userLink) {
+            return;
+        }
+
+        const activeUser = (userName || '').trim();
+        if (!activeUser) {
+            userLink.textContent = 'Log In';
+            userLink.href = 'auth.html';
+            return;
+        }
+
+        const badgeInfo = getUserBadgeInfo(activeUser);
+        userLink.innerHTML = `Welcome, ${activeUser} <span class="user-link-badge ${badgeInfo.className}">${badgeInfo.rank}</span>`;
+        userLink.href = 'profilePreferences.html';
+    }
+
     function loadState() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
@@ -363,6 +410,9 @@
     window.CampCalGamification = {
         ACTION_POINTS,
         getCurrentSemesterId,
+        getLifetimeRankInfo,
+        getUserBadgeInfo,
+        applyNavbarUserLink,
         getCurrentUserName,
         awardAction,
         hasRsvped,

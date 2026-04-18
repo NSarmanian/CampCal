@@ -39,14 +39,8 @@
             const loginButton = document.getElementById('loginButton');
             const signupButton = document.getElementById('signupButton');
 
-            if (userLink) {
-                if (savedName) {
-                    userLink.textContent = `Welcome, ${savedName}`;
-                    userLink.href = 'profilePreferences.html';
-                } else {
-                    userLink.textContent = 'Log In';
-                    userLink.href = 'auth.html';
-                }
+            if (window.CampCalGamification) {
+                window.CampCalGamification.applyNavbarUserLink(userLink, savedName);
             }
 
             loginButton.addEventListener('click', () => {

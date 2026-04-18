@@ -66,14 +66,8 @@
                 return '';
             }
 
-            if (userLink) {
-                if (savedName) {
-                    userLink.textContent = `Welcome, ${savedName}`;
-                    userLink.href = 'profilePreferences.html';
-                } else {
-                    userLink.textContent = 'Log In';
-                    userLink.href = 'auth.html';
-                }
+            if (window.CampCalGamification) {
+                window.CampCalGamification.applyNavbarUserLink(userLink, savedName);
             }
 
             signupPhone.addEventListener('input', () => {
